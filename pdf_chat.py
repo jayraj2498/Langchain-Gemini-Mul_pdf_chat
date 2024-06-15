@@ -70,7 +70,7 @@ def get_conversational_chain():
 
     prompt=PromptTemplate(template=prompt_template , input_variables=["context","question"]) 
     
-    chain=load_qa_chain(model,chain_type="stuff" , prompt=prompt)  # stuff inside it will do text summerizaiton 
+    chain=load_qa_chain(model, prompt=prompt ,chain_type="stuff" )  # stuff inside it will do text summerizaiton 
     
     return chain 
 
@@ -84,11 +84,11 @@ def get_conversational_chain():
 def user_input(user_question):
     embeddings =GoogleGenerativeAIEmbeddings(model = "models/embedding-001") 
     
-    new_db =FAISS.load_local("faiss_index" , embeddings) 
+    Local_faiss_db =FAISS.load_local("faiss_index" , embeddings) 
     
-    docs= new_db.similarity_search(user_question) 
+    docs=  Local_faiss_db.similarity_search(user_question) 
     
-    chain= get_conversational_chain() 
+    chain= get_conversational_chain()     # 4 
     
     response= chain( 
         {"input_document" :docs , "question":user_question}
@@ -109,8 +109,8 @@ def user_input(user_question):
 
 
 def main():
-    st.set_page_config("Chat PDF")
-    st.header("Chat with PDF using Gemini💁")
+    st.set_page_config("Chat with PDF")
+    st.header("Interact with Your PDFs Like Never Before with Gemini 💡📄")
 
     user_question = st.text_input("Ask a Question from the PDF Files")
 
@@ -122,9 +122,9 @@ def main():
         pdf_docs = st.file_uploader("Upload your PDF Files and Click on the Submit & Process Button", accept_multiple_files=True)
         if st.button("Submit & Process"):
             with st.spinner("Processing..."):
-                raw_text = read_pdf_text(pdf_docs)
-                text_chunks = get_text_chunks(raw_text)
-                get_vector_store(text_chunks)
+                raw_text = read_pdf_text(pdf_docs)   #1 
+                text_chunks = get_text_chunks(raw_text) # 2
+                get_vector_store(text_chunks)  # 3 
                 st.success("Done")
 
 
